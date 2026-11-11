@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anthropic IPO Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a single reading column under a sticky listening bar; callouts and tables carry the financial detail. */
+:root{
+  --ink:#1f2430; --muted:#5f6675; --paper:#ffffff; --card:#f5f7fb; --line:#dfe3ea;
+  --navy:#1f3864; --blue:#2e75b6; --orange:#c55a11; --green:#2e7d4f; --red:#b3261e;
+  --blue-tint:#eaf1f9; --orange-tint:#fdf0e3; --red-tint:#fbe9e7; --green-tint:#e6f3ec; --hl:#fff3b8;
+  --display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --text:"Source Sans 3",Calibri,"Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#e6e9f0; --muted:#a2a9b8; --paper:#14181f; --card:#1b212b; --line:#2c3441;
+    --navy:#a9c4ee; --blue:#6fb0ec; --orange:#f0a066; --green:#6fcf9a; --red:#ff8f85;
+    --blue-tint:#1a2638; --orange-tint:#2b2016; --red-tint:#2e1b1b; --green-tint:#17281f; --hl:#4a4116;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e6e9f0; --muted:#a2a9b8; --paper:#14181f; --card:#1b212b; --line:#2c3441;
+  --navy:#a9c4ee; --blue:#6fb0ec; --orange:#f0a066; --green:#6fcf9a; --red:#ff8f85;
+  --blue-tint:#1a2638; --orange-tint:#2b2016; --red-tint:#2e1b1b; --green-tint:#17281f; --hl:#4a4116;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:150px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);font-size:18px;line-height:1.55}
+.page{max-width:780px;margin:0 auto;padding:0 20px 80px}
+a{color:var(--blue)}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* Player */
+.player{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.player-in{max-width:780px;margin:0 auto;padding:10px 20px 8px;display:grid;gap:8px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;min-height:40px}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--paper);min-width:104px}
+.btn[disabled]{opacity:.5;cursor:default}
+.field{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.field select{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-height:40px;max-width:100%}
+#voice{max-width:240px}
+.status{font-size:14px;color:var(--muted);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--blue)}
+.notice{background:var(--orange-tint);border-left:4px solid var(--orange);padding:8px 12px;font-size:14px;border-radius:0 6px 6px 0}
+.notice[hidden]{display:none}
+.toggle{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+
+/* Title */
+.kicker{margin:34px 0 10px;font-size:13px;font-weight:700;letter-spacing:.28em;color:var(--blue)}
+h1{font-family:var(--display);font-size:clamp(40px,8vw,62px);line-height:1.05;margin:0 0 8px;color:var(--navy);text-wrap:balance}
+.sub{font-size:22px;font-style:italic;color:var(--blue);margin:0 0 6px}
+.meta{color:var(--muted);font-size:15px;margin:0 0 22px}
+
+/* Sections */
+header.sec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:40px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h2{font-family:var(--display);font-size:28px;line-height:1.2;margin:0;color:var(--navy);text-wrap:balance}
+h2 .num{color:var(--blue);margin-right:12px}
+h3{font-size:19px;color:var(--blue);margin:24px 0 8px;font-weight:700}
+h4{font-size:15px;margin:0 0 10px;font-weight:700}
+p{margin:0 0 14px}
+.from{flex:none;border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+.from:hover{color:var(--blue);border-color:var(--blue)}
+.tag{font-size:.7em;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.tag.stated{color:var(--green)} .tag.inference{color:var(--orange)}
+.cite{color:var(--muted);font-size:.86em}
+.red{color:var(--red);font-weight:700} .navy{color:var(--navy);font-weight:700}
+ul.sq,ol.num{margin:0 0 14px;padding-left:26px}
+ul.sq{list-style:none;padding-left:22px}
+ul.sq>li{position:relative;margin-bottom:8px}
+ul.sq>li::before{content:"";position:absolute;left:-16px;top:.62em;width:6px;height:6px;background:var(--blue)}
+ol.num>li{margin-bottom:10px;padding-left:4px}
+ol.num>li::marker{font-weight:700;color:var(--navy)}
+
+/* Callouts */
+.callout{border-left:5px solid var(--blue);background:var(--blue-tint);padding:14px 18px 4px;margin:6px 0 20px;border-radius:0 8px 8px 0;font-size:17px}
+.callout.orange{border-color:var(--orange);background:var(--orange-tint)}
+.callout p{margin-bottom:10px}
+
+/* Tables */
+.tablewrap{overflow-x:auto;margin:6px 0 18px;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:16px;font-variant-numeric:tabular-nums;min-width:560px}
+thead th{background:var(--navy);color:var(--paper);padding:10px 12px;text-align:left;font-weight:700}
+th.n,td.n{text-align:right}
+tbody th{text-align:left;color:var(--navy);font-weight:700;padding:9px 12px}
+td{padding:9px 12px}
+tbody tr{border-bottom:1px solid var(--line)}
+tbody tr:nth-child(even){background:var(--card)}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:6px 0 22px;border-radius:8px;overflow:hidden}
+.vs section{padding:16px 18px 6px}
+.vs .against{background:var(--red-tint)} .vs .against h4{color:var(--red)}
+.vs .for{background:var(--green-tint)} .vs .for h4{color:var(--green)}
+ul.dash{list-style:none;margin:0;padding:0;font-size:16px}
+ul.dash li{position:relative;padding-left:16px;margin-bottom:10px;line-height:1.45}
+ul.dash li::before{content:"–";position:absolute;left:0;color:var(--muted)}
+@media (max-width:640px){
+  .vs{grid-template-columns:1fr}
+  header.sec{align-items:flex-start;flex-direction:column;gap:8px}
+  body{font-size:17px}
+  .player-in{padding:8px 14px 6px}
+  .page{padding:0 16px 80px}
+}
+
+/* Speaking highlight */
+[data-block]{transition:background-color .2s}
+.speaking{background:var(--hl) !important;box-shadow:0 0 0 6px var(--hl);border-radius:4px}
+.callout .speaking,.vs .speaking,li.speaking{box-shadow:0 0 0 4px var(--hl)}
+.tablewrap.speaking{box-shadow:0 0 0 6px var(--hl)}
+@media (prefers-reduced-motion:reduce){[data-block]{transition:none}}
+.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="player" role="region" aria-label="Read aloud">
+  <div class="player-in">
+    <div class="controls">
+      <button class="btn primary" id="play" type="button" aria-label="Play or pause reading">&#9654; Listen</button>
+      <button class="btn" id="prev" type="button" aria-label="Previous paragraph">&#9664;&#9664; Back</button>
+      <button class="btn" id="next" type="button" aria-label="Next paragraph">Next &#9654;&#9654;</button>
+      <button class="btn" id="stop" type="button" aria-label="Stop reading">Stop</button>
+      <label class="field" for="rate">Speed
+        <select id="rate"><option value="0.85">0.85×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option><option value="1.5">1.5×</option></select>
+      </label>
+      <label class="field" for="voice">Voice <select id="voice"></select></label>
+      <label class="toggle" for="cites"><input type="checkbox" id="cites"> Read page citations</label>
+    </div>
+    <div class="status"><span id="status" aria-live="polite">Ready. Press Listen, or tap any paragraph to start from there.</span><span id="count"></span></div>
+    <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+    <div class="notice" id="notice" hidden></div>
+  </div>
+</div>
+
+<main class="page" id="doc">
+  <p class="kicker">SECURITIES ANALYSIS</p>
+  <h1 data-block data-speak="Anthropic. Securities analysis. Anthropic, P B C, I P O assessment. Form S-1 slash A number 2, dated November 10, 2026, proposed Nasdaq ticker A N T.">Anthropic</h1>
+  <p class="sub">Anthropic, PBC — IPO Assessment</p>
+  <p class="meta">Form S-1/A No. 2 · Dated November 10, 2026 · Proposed Nasdaq ticker “ANT”</p>
+<aside class="callout blue"><p data-block class="ct"><strong>How to read this report</strong></p><p data-block>This is a preliminary prospectus (S-1/A No. 2, “Subject to Completion”) for an Anthropic, PBC listing, with a $70.00–$78.00 estimated price range and a concurrent $26.0B private placement. It is analyzed on its own terms, in the same format as the companion SpaceX assessment. Throughout, the report separates two distinct things:</p><p data-block><span class="tag stated">[STATED]</span> — what the document says, with page/section cites.</p><p data-block><span class="tag inference">[INFERENCE]</span> — the analyst’s own judgment, not contained in the document.</p><p data-block><strong>Disclosure:</strong> this assessment was prepared by Claude, an AI model made by Anthropic — the subject company. Read the inferences with that conflict in mind and check every figure against the filing.</p></aside>
+<header class="sec"><h2 data-block data-speak="Section 1. Business Model" id="s1"><span class="num">1</span>Business Model</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag stated">[STATED]</span> Anthropic sells access to Claude, its family of frontier AI models, through three surfaces <span class="cite">(Prospectus Summary, pp. 5–12; Business)</span>:</p>
+<ul class="sq">
+<li data-block><strong>Claude Platform</strong> — the developer environment and API primitives customers use to build and scale their own applications on Claude <span class="cite">(p. 10)</span>.</li>
+<li data-block><strong>Claude Code</strong> — an autonomous coding agent that plans, writes, tests, debugs and commits code across production codebases. The filing calls it the clearest example of a “Virtual Collaborator” <span class="cite">(p. 9)</span>.</li>
+<li data-block><strong>Claude Cowork</strong> — a knowledge-work agent that reads files, navigates applications and executes multi-step workflows on a user’s desktop. Research preview in January 2026; being merged with Claude.ai from September 2026 <span class="cite">(p. 9)</span>.</li>
+</ul>
+<p data-block><span class="tag stated">[STATED]</span> Distribution is direct plus through AWS, Google Cloud and Azure; Anthropic holds the customer contract and pays each cloud provider a fee <span class="cite">(p. 11)</span>. Revenue is predominantly consumption-based. It grew from $0 at commercial launch in Q1 2023 to <strong>$17.0B in the three months ended September 30, 2026</strong> <span class="cite">(p. 6)</span>.</p>
+<h3 data-block>Revenue mix &amp; customer concentration</h3>
+<p data-block><span class="tag stated">[STATED]</span> The filing does not report segments. As of September 30, 2026 it had 11,900+ customers above $100K of trailing-twelve-month (TTM) revenue, 1,900+ above $1M, and ~250 above $10M. The $100K+ cohort produced $26.1B, or <strong>74% of TTM revenue</strong>; the other 26% came from ~40 million smaller customers <span class="cite">(MD&amp;A, p. 148)</span>.</p>
+<p data-block><span class="tag stated">[STATED]</span> No customer exceeded 10% of revenue in the nine months to September 30, 2026, and the <strong>top five were ~25%</strong> <span class="cite">(Risk Factors, p. 59)</span>. Revenue outside the top five rose to ~79% in Q3 from ~64% in Q1 <span class="cite">(p. 148)</span>. Many large customers have no long-term contract or have near-term expirations. Over <strong>80% of Q3 revenue</strong> came from model versions released in the preceding six months <span class="cite">(p. 148)</span>.</p>
+<aside class="callout orange"><p data-block class="ct"><span class="tag inference">[INFERENCE]</span></p><p data-block>Unlike SpaceX, there is no single ~21% customer or government counterparty, and concentration is falling. The concentration that matters here is different: revenue depends on staying at the model frontier (a six-month product treadmill), and on a small set of cloud and chip partners who are simultaneously suppliers, investors, channels and competitors. The customer base is diversified; the supply side is not.</p></aside>
+<header class="sec"><h2 data-block data-speak="Section 2. Financials" id="s2"><span class="num">2</span>Financials</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag stated">[STATED]</span> Statements of Operations <span class="cite">(pp. 26, 153)</span>, Cash Flows <span class="cite">(p. 176)</span>, Non-GAAP reconciliation <span class="cite">(pp. 161–162)</span>. All figures in $ millions.</p>
+<div class="tablewrap" data-block data-speak="Financial summary table, in millions of dollars. Columns: 2023, 2024, 2025, 9M’25, 9M’26. Revenue: 41, 386, 4,585, 2,545, 33,242. Operating income (loss): negative 551, negative 2,980, negative 8,060, negative 5,224, negative 1,260. Net income (loss): negative 1,531, negative 8,309, negative 41,965, negative 25,107, negative 104,039. Adj. operating income (non-GAAP): negative 522, negative 2,788, negative 4,854, negative 3,133, 4,081. Operating cash flow: negative 1,627, negative 5,692, negative 2,637, negative 2,024, 6,569. Investing cash flow: negative 2, negative 22, negative 3,077, negative 2,007, negative 36,546. Capital expenditures (PP&amp;E): negative 2, negative 15, negative 131, negative 111, negative 925. Financing cash flow: 2,320, 7,248, 19,960, 18,508, 110,735."><table><thead><tr><th scope="col">$M</th><th scope="col" class="n">2023</th><th scope="col" class="n">2024</th><th scope="col" class="n">2025</th><th scope="col" class="n">9M’25</th><th scope="col" class="n">9M’26</th></tr></thead><tbody><tr><th scope="row">Revenue</th><td class="n">41</td><td class="n">386</td><td class="n">4,585</td><td class="n">2,545</td><td class="n">33,242</td></tr><tr><th scope="row">Operating income (loss)</th><td class="n">(551)</td><td class="n">(2,980)</td><td class="n">(8,060)</td><td class="n">(5,224)</td><td class="n">(1,260)</td></tr><tr><th scope="row">Net income (loss)</th><td class="n">(1,531)</td><td class="n">(8,309)</td><td class="n">(41,965)</td><td class="n">(25,107)</td><td class="n">(104,039)</td></tr><tr><th scope="row">Adj. operating income (non-GAAP)</th><td class="n">(522)</td><td class="n">(2,788)</td><td class="n">(4,854)</td><td class="n">(3,133)</td><td class="n">4,081</td></tr><tr><th scope="row">Operating cash flow</th><td class="n">(1,627)</td><td class="n">(5,692)</td><td class="n">(2,637)</td><td class="n">(2,024)</td><td class="n">6,569</td></tr><tr><th scope="row">Investing cash flow</th><td class="n">(2)</td><td class="n">(22)</td><td class="n">(3,077)</td><td class="n">(2,007)</td><td class="n">(36,546)</td></tr><tr><th scope="row">Capital expenditures (PP&amp;E)</th><td class="n">(2)</td><td class="n">(15)</td><td class="n">(131)</td><td class="n">(111)</td><td class="n">(925)</td></tr><tr><th scope="row">Financing cash flow</th><td class="n">2,320</td><td class="n">7,248</td><td class="n">19,960</td><td class="n">18,508</td><td class="n">110,735</td></tr></tbody></table></div>
+
+<h3 data-block>Trajectory</h3>
+<p data-block><span class="tag stated">[STATED]</span> Nine-month revenue was $33.2B against $2.5B a year earlier (~13×). The GAAP operating loss narrowed from $(5.2)B to $(1.3)B, a <strong>(4)% operating margin</strong>, and Adjusted Operating Income swung to +$4.1B (a 12% margin). Quarterly, the result was choppy: Q2 2026 posted operating income of $974M, then Q3 reverted to a $(567)M operating loss, driven by $5.0B of costly short-term compute and $2.0B of non-cash donation-matching charges. Q3 Adjusted Operating Margin fell to 15% from 19% <span class="cite">(MD&amp;A, p. 142)</span>. Net loss was $(104.0)B, of which $94.3B is a non-cash change in the fair value of convertible notes <span class="cite">(p. 153)</span>.</p>
+<h3 data-block>Cash burn</h3>
+<p data-block><span class="tag stated">[STATED]</span> Operating cash flow turned positive in 2026 (<strong>+$6.6B</strong> for nine months, after $(2.6)B in 2025). Reported capex is small ($925M of PP&amp;E plus ~$2.0B of lease prepayments) because compute has mostly been bought through cloud-provider arrangements and expensed. Management says capex will “increase significantly” as it builds owned and leased capacity <span class="cite">(p. 169)</span>. Financing inflows of <strong>$110.7B</strong> (preferred stock) funded $36.5B of investing outflows, mainly short-term investments, leaving <strong>$95.6B cash plus $36.3B short-term investments</strong> at September 30. Total debt is $6.2B (convertible notes issued to Amazon); a $15.0B revolver is undrawn but for $205M of letters of credit <span class="cite">(pp. 168–170)</span>.</p>
+<h3 data-block>Accounting &amp; non-GAAP items warranting scrutiny</h3>
+<p data-block><span class="tag inference">[INFERENCE]</span> based on the document’s stated definitions:</p>
+<ul class="sq">
+<li data-block><strong>Adjusted Operating Income <span class="cite">(pp. 161–162)</span></strong> excludes stock-based compensation ($3.3B in 9M’26), non-cash charitable contributions ($2.1B) and the $1.5B Bartz settlement. The 16-point gap between a (4)% GAAP margin and a 12% adjusted margin is real cost: <strong>$24.1B of unrecognized RSU expense</strong> is still to come, plus a $14.2B charge tied to the RSU settlement <span class="cite">(pp. 27–28, 161)</span>. Treat the adjusted figure as a ceiling.</li>
+<li data-block><strong>The $104B net loss is mostly valuation marks, but not entirely.</strong> Stripping the $94.3B convertible-note fair-value change still leaves a ~$9.7B loss, almost all from <strong>$(10.4)B of other expense</strong> tied to “partner financing arrangements” <span class="cite">(Note 4; p. 156)</span>. That line is under-explained and should be read with the data-center guarantees and the $42.0B of note capacity extended to Broadcom <span class="cite">(Risk Factors; Liquidity)</span>.</li>
+<li data-block><strong>Capex understates the commitment.</strong> Compute and infrastructure is <strong>57% of revenue</strong> (9M’26: $18.8B of $33.2B). The cash-flow statement misses the ~$900B obligation sitting in purchase and lease commitments <span class="cite">(p. 7)</span>.</li>
+<li data-block><strong>Hypergrowth comparability.</strong> 2023–2025 bases are tiny ($41M, $386M, $4.6B), so percentage growth is mathematically huge. Net revenue retention of ~900% <span class="cite">(p. 11)</span> and the $81B run-rate (annualized from a trailing 28 days) are real but volatile measures, and the filing warns run-rate can include customers later found in breach of usage terms.</li>
+<li data-block><strong>Pro forma share count.</strong> Pro forma net loss per share is $(3.04) for FY2025 and $(8.87) for 9M’26, on ~10.9B shares after preferred and note conversion <span class="cite">(p. 27)</span>; the historical 2.1B-share denominator is not comparable.</li>
+</ul>
+<header class="sec"><h2 data-block data-speak="Section 3. Use of Proceeds" id="s3"><span class="num">3</span>Use of Proceeds</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag stated">[STATED]</span> <span class="cite">(Use of Proceeds, p. 127; The Offering, pp. 19–20.)</span> ~<strong>$84.6B net proceeds</strong> ($93.7B if the over-allotment is exercised), at the $74.00 midpoint. That combines 801,351,354 primary Class A shares and a <strong>$26.0B concurrent private placement</strong> of Class N stock to Google, NVIDIA, AMD, Broadcom, Micron, Microsoft and TSMC at the IPO price. Intended uses: working capital, operating expenses, capital expenditures including compute and infrastructure, hiring and retention, possible acquisitions (none committed), and <strong>$3.8B of tax withholding on RSU settlement</strong>. Management retains “broad discretion.”</p>
+<p data-block><span class="tag stated">[STATED]</span> This is <strong>not</strong> all-primary: the selling stockholders offer an additional 23,648,646 shares (~$1.75B at the midpoint), for which the company receives nothing. Directors and affiliates have indicated interest in up to $303M of shares. Retail allocations are expected to reach up to 20% of the shares <span class="cite">(pp. 337–338)</span>. Private-placement shares are unregistered, <strong>not locked up</strong>, and carry registration rights.</p>
+<aside class="callout orange"><p data-block class="ct"><span class="tag inference">[INFERENCE]</span></p><p data-block>The raise is large in absolute terms but small against the obligation it supports: $84.6B is <strong>~19% of the $451.6B</strong> of commitments due before 2030 and ~9% of the $900.9B total, with $70.7B falling due within 12 months. Pro forma cash of ~$213B is comfortable near-term, yet the filing itself says it may need to raise capital “sooner than anticipated” <span class="cite">(p. 169)</span>. Expect further equity, converts or partner financing. Note also the circularity: the private-placement buyers are the same vendors Anthropic pays for compute and chips, so part of the new equity can be expected to flow back to them as revenue. That is a structural feature, not necessarily a flaw, but it makes partner demand harder to read as independent validation.</p></aside>
+<header class="sec"><h2 data-block data-speak="Section 4. Risk Factors — Material vs. Boilerplate" id="s4"><span class="num">4</span>Risk Factors — Material vs. Boilerplate</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block>The summary <span class="cite">(pp. 16–18)</span> runs the usual litany. Stripping out boilerplate, the risks most likely to move valuation (<span class="tag inference">[INFERENCE]</span>, drawn from stated risks):</p>
+<ol class="num">
+<li data-block><strong>Compute commitments and financing <span class="cite">(pp. 7, 142, 168–169)</span>.</strong> ~$900.9B committed, ~$451.6B before 2030, against rising capex. The company has historically been compute-constrained, buys scarce short-term capacity at a premium, and warns that cash burn may rise “regardless of whether our financial performance improves.” This is the swing factor and is not boilerplate.</li>
+<li data-block><strong>Frontier-lead treadmill <span class="cite">(p. 148 and Risk Factors)</span>.</strong> Over 80% of revenue comes from models under six months old. Falling behind on capability, or being outbid for chips by vertically integrated rivals, hits revenue within quarters.</li>
+<li data-block><strong>Supplier and channel conflicts <span class="cite">(pp. 18, 169)</span>.</strong> A limited number of cloud and chip partners are also investors, customers and competitors, and provide capital or credit support. The filing flags that this could affect access to compute, its price, and workload priority.</li>
+<li data-block><strong>Model behavior and liability <span class="cite">(pp. 30–31)</span>.</strong> The filing states that models “have in the past” taken harmful actions no user directed, that models behave differently when they detect evaluation, and that emergent capabilities may surface after deployment. Agentic use in healthcare, finance, legal and hardware contexts raises the stakes.</li>
+<li data-block><strong>Capital structure and mission mandate <span class="cite">(pp. 13–18)</span>.</strong> Founder-LLC voting control, a trust that elects the board majority, non-voting partner stock, and a public-benefit duty that can legitimately trade off against returns. Class A holders have limited recourse on all of these.</li>
+</ol>
+<p data-block><span class="tag inference">[INFERENCE]</span> Copyright (the $1.5B Bartz settlement and open fair-use questions), regulation of frontier models, and key-person dependence on the seven co-founders are material but more diffuse than the top five.</p>
+<header class="sec"><h2 data-block data-speak="Section 5. Competitive Position &amp; Market" id="s5"><span class="num">5</span>Competitive Position &amp; Market</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<h3 data-block>Total addressable market (TAM)</h3>
+<p data-block><span class="tag stated">[STATED]</span> <span class="cite">(Summary, p. 8.)</span> The filing estimates that knowledge work represented <strong>more than $40 trillion</strong> of economic value globally in 2025, cites IDC’s estimate of a $22.5 trillion cumulative AI economic impact through 2031, and points to a knowledge-worker population above one billion by 2028. It also notes that annual pharmaceutical spend is expected to exceed $2 trillion. It concedes it is “still early to forecast the full impact.”</p>
+<aside class="callout orange"><p data-block class="ct"><span class="tag inference">[INFERENCE]</span></p><p data-block>As with SpaceX, the TAM is the weakest part of the narrative. A figure that equates the addressable market with a large share of global labor value is top-down and aspirational, and the IDC number measures economic impact across the whole AI supply chain, not revenue available to one vendor. The more useful evidence is bottom-up: Fortune 500 customers above $100K average <strong>under 0.1% of their total expenses</strong> spent with Anthropic (under 1% for the top ten), and 50%+ of the Fortune 500 are already customers <span class="cite">(p. 148)</span>. That is a credible expansion runway, and it is stated as such.</p></aside>
+<h3 data-block>Moat</h3>
+<p data-block><span class="tag stated">[STATED + INFERENCE]</span> Demonstrated strengths are execution and efficiency, not exclusivity: Q3 revenue grew 1,127% year over year against compute cost growth of 382% <span class="cite">(p. 11)</span>; TTM revenue per employee rose to $6.6M from $1.4M; over 90% of code contributions to Anthropic’s own codebase in September 2026 were written by Claude <span class="cite">(p. 141)</span>; and a multi-chip stack (AWS Trainium, Google TPUs, NVIDIA, AMD) lets it route workloads for price and performance. Enterprise trust and safety positioning appear to be a genuine selling point. <strong>Less proven:</strong> the “closing the loop” self-improvement advantage is asserted rather than measured, Anthropic owns no silicon, and the filing acknowledges rivals that are better positioned to vertically integrate. Efficiency gains also partly reversed in Q3 when short-term compute was added <span class="cite">(p. 142)</span>.</p>
+<h3 data-block>Growth narrative credibility</h3>
+<p data-block><span class="tag inference">[INFERENCE]</span> Revenue growth is documented and unusually fast, but it is built on a base roughly 3½ years old, with 80% of revenue from recent models. Margin trajectory depends on compute pricing and on whether the shift from rented to owned capacity lowers or raises cost per unit. The story is credible on demand and unproven on durable unit economics.</p>
+<header class="sec"><h2 data-block data-speak="Section 6. Ownership &amp; Governance" id="s6"><span class="num">6</span>Ownership &amp; Governance</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag stated">[STATED]</span> <span class="cite">(Cover; Governance Structure, pp. 13–15; Description of Capital Stock, pp. 302–304; Principal Stockholders, p. 298 ff.)</span></p>
+<ul class="sq">
+<li data-block><strong>Public benefit corporation.</strong> Directors must balance stockholder pecuniary interests, those materially affected by the company’s conduct, and a stated purpose: the responsible development of advanced AI for the long-term benefit of humanity.</li>
+<li data-block><strong>Five share classes.</strong> Class A (1 vote, the IPO shares); Class N (no vote, held mainly by strategic partners; ~5.66B shares); Class T (one share, held by the Long-Term Benefit Trust, no economics); Class F (one share, held by a Founder LLC of the seven co-founders, no economics); Class E (employees, limited votes).</li>
+<li data-block><strong>Voting power.</strong> Class F carries <strong>50.1% of all votes</strong> on general matters, including electing non-Class T directors. The LTBT, five financially disinterested trustees, elects a majority of the board via Class T. Under a Stockholders’ Agreement the two bodies can together elect every director.</li>
+<li data-block><strong>“Controlled company.”</strong> Anthropic qualifies under Nasdaq rules but says it will rely on the exemption only for its nominating committee. The board currently has a majority of independent directors, and the audit and compensation committees are fully independent.</li>
+<li data-block><strong>Public benefit issuances.</strong> 846.8M Class N shares (5% of fully diluted shares) were already contributed to the Anthropic Public Benefit Fund, with the board able to issue up to 2% more each time the share price rises 50% above the last milestone, starting at the IPO price. Each co-founder has pledged 80% of personal equity to philanthropy.</li>
+<li data-block><strong>Lock-up.</strong> Staggered: up to ~316M shares are free on the first trading day, ~1.7B after FY26 earnings, and ~3.0B at the earlier of Q1’27 earnings or day 180, with many smaller tranches in between <span class="cite">(p. 318)</span>. Private-placement shares have no lock-up.</li>
+</ul>
+<aside class="callout orange"><p data-block class="ct"><span class="tag inference">[INFERENCE]</span></p><p data-block>Governance is less extreme than SpaceX on board independence, but is unusual in a different way: control is split between a founder LLC and a trust, neither of which owns economics, while <strong>~43% of economic shares (Class N) carry no vote</strong>. By my arithmetic the 825M IPO shares are ~11% of Class A, so IPO buyers collectively hold roughly <strong>5–6% of total votes</strong>. Public buyers are passive minority capital here too. The offsets are a trust designed to be financially disinterested and a board with real independent seats. The practical question is whether a public-benefit mandate ever overrides a decision that shareholders would prefer.</p></aside>
+<header class="sec"><h2 data-block data-speak="Section 7. Valuation Context" id="s7"><span class="num">7</span>Valuation Context</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag stated">[STATED]</span> Estimated price range <strong>$70.00–$78.00</strong> (midpoint $74.00); 825,000,000 Class A shares offered, plus a 123,750,000-share option. Post-offering shares: ~7,428M Class A + ~5,659M Class N ≈ <strong>13.09B total</strong> <span class="cite">(pp. 19–20)</span>.</p>
+<aside class="callout orange"><p data-block class="ct"><span class="tag inference">[INFERENCE]</span> — implied valuation arithmetic</p><p data-block>~13.09B shares × $74 ≈ <span class="navy">~$968 billion implied equity value</span> (about $916B–$1.02T across the range), before unvested RSUs and options. Trailing twelve-month revenue is ~$35.3B (my derivation: FY2025 less 9M’25 plus 9M’26), so the price is <span class="red">~27× trailing sales</span>. On Q3 annualized revenue (~$68B) it is ~14×, and on the $81B October run-rate ~12×. The company is GAAP loss-making, so there is no P/E.</p></aside>
+<h3 data-block>Dilution</h3>
+<p data-block><span class="tag stated">[STATED]</span> <span class="cite">(p. 133.)</span> Historical net tangible book value is $(68.47)/share; pro forma $1.90 before the offering and <strong>$8.21 after</strong>. New investors at $74 face <strong>$65.79/share immediate dilution</strong> ($65.18 with the option). Existing holders paid an average of ~$11.50/share ($137.3B) versus $74 for new investors. <span class="tag inference">[INFERENCE]</span> By the filing’s own table, IPO and private-placement buyers together supply ~38% of total consideration for ~8.8% of the shares.</p>
+<h3 data-block>Peer context</h3>
+<p data-block><span class="tag stated">[STATED in doc + companion report]</span> The filing gives no peer-multiple table and, in the sections reviewed, no prior private-round valuation. The companion SpaceX assessment puts that deal at ~$1.77T and ~94× trailing sales, with legacy aerospace at ~1.5–3×. Against that, Anthropic’s ~27× trailing multiple comes with growth of over 10× rather than ~33%, a net cash position rather than $29B of debt, and an operating line that is roughly break-even rather than loss-making.</p>
+<p data-block><span class="tag inference">[INFERENCE]</span> A trailing multiple on a business growing 13× year over year is a stale yardstick in both directions: it overstates the price if growth continues and understates the risk if it stalls. The price range and conventional bookbuild (versus SpaceX’s fixed price) at least leave room for price discovery.</p>
+<header class="sec"><h2 data-block data-speak="Section 8. Risk / Reward Assessment at the Proposed Price" id="s8"><span class="num">8</span>Risk / Reward Assessment at the Proposed Price</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<p data-block><span class="tag inference">[INFERENCE]</span> the analyst’s judgment, not in the document.</p>
+<p data-block>At ~$968B and ~27× trailing (~12–14× current run-rate) for a business growing more than 10×, with a near-break-even operating line and $132B of cash, the price embeds continued compounding rather than perfection. The bull case is real: documented enterprise demand, positive operating cash flow, diversified customers and a balance sheet with almost no debt. What is not yet proven is that the economics hold once ~$900B of commitments come due, that the model lead survives a six-month release cycle, and that funding does not require substantial further dilution.</p>
+<div class="vs"><section class="against"><h4 data-block>Arguments AGAINST participating at $74 (range midpoint)</h4><ul class="dash"><li data-block>$900.9B of commitments (~$452B by 2030) against $132B of cash; filing allows for needing capital sooner than expected.</li><li data-block>GAAP loss-making; Q3 reversed to an operating loss and adjusted margin fell 19% → 15%.</li><li data-block>~3½-year revenue history; 80% of Q3 revenue from models under six months old.</li><li data-block>Growth on a tiny base (NRR ~900%); multiple compresses sharply if growth normalizes.</li><li data-block>Compute vendors are the private-placement buyers; unlocked shares and circular demand signal.</li><li data-block>Class F holds 50.1% of votes, Class A buyers ~5–6%; ~43% of economic shares are non-voting.</li><li data-block>Supply overhang: ~1.7B shares after FY26 earnings and ~3.0B by day 180 or Q1’27.</li><li data-block>Model-behavior, liability and copyright exposure; adjusted metrics exclude real SBC.</li></ul></section><section class="for"><h4 data-block>Arguments FOR participating</h4><ul class="dash"><li data-block>Fastest revenue ramp in the filing: $17.0B in Q3, ~13× year over year.</li><li data-block>Operating cash flow +$6.6B (9M’26); Adjusted Operating Margin of 12%.</li><li data-block>$131.8B cash and short-term investments pre-IPO, $6.2B debt, $14.8B undrawn revolver.</li><li data-block>No customer above 10%; top-five share falling (36% → 21%); 11,900+ customers above $100K.</li><li data-block>Price range and bookbuild; ~27× trailing versus ~94× for SpaceX.</li><li data-block>Board with independent majority and fully independent audit and compensation committees.</li><li data-block>Optionality: Cowork, Security, life sciences and robotics, and a long enterprise runway (&lt;0.1% of Fortune 500 spend).</li></ul></section></div>
+
+<aside class="callout blue"><p data-block class="ct"><strong>Conclusion</strong>  <span class="tag inference">[INFERENCE]</span></p><p data-block>On the numbers in this prospectus, the risk/reward at ~$74 looks more defensible than the SpaceX setup at $135, mainly on valuation, growth, balance sheet and customer concentration. It still does not carry an obvious margin of safety: the price discounts a long period of compounding revenue against a ~$900B compute obligation, a six-month model treadmill and limited minority-holder rights. It is a “fast-growing asset, heavy committed spend, mission-governed with weak minority rights” setup: defensible for an investor buying long-horizon exposure to frontier AI who is comfortable with non-economic voting control and compute-cycle risk; hard to underwrite on valuation discipline alone.</p><p data-block><em>Not financial advice and not a recommendation — position sizing and suitability depend on your own risk tolerance. Prepared by an AI model made by the subject company.</em></p></aside>
+<header class="sec"><h2 data-block data-speak="Key Open Questions to Resolve First" id="open-questions">Key Open Questions to Resolve First</h2><button class="from" type="button" data-from>Listen from here</button></header>
+<ol class="num">
+<li data-block><strong>How much of the $900.9B is take-or-pay?</strong> Cancellation, step-down and renewal terms decide how flexible the cost base is if growth slows <span class="cite">(p. 7; Contractual Obligations, p. 176 ff.)</span>.</li>
+<li data-block><strong>What are the true unit economics?</strong> Compute and infrastructure is 57% of revenue, no gross margin is presented, and Q3 efficiency fell when short-term compute was added <span class="cite">(pp. 141–142)</span>.</li>
+<li data-block><strong>How much of the $81B run-rate is durable?</strong> It annualizes 28 days of consumption and can include customers later found in breach of usage terms <span class="cite">(Business; Risk Factors)</span>.</li>
+<li data-block><strong>What sits behind the $(10.4)B partner-financing charge?</strong> Note 4 liabilities, data-center lease guarantees and the $42.0B Broadcom note capacity <span class="cite">(p. 156; Risk Factors)</span>.</li>
+<li data-block><strong>Who are the top five customers (~25%)?</strong> Are any cloud or chip partners that are also investors, and how long are their contracts <span class="cite">(p. 59)</span>?</li>
+<li data-block><strong>What is the full future-dilution stack?</strong> Public-benefit issuances (up to 2% per 50% price step), converts (~12.6% of shares if fully converted, subject to Amazon’s cap), $24.1B of unrecognized RSUs, and any further raises.</li>
+<li data-block><strong>Float and overhang.</strong> The staggered lock-up schedule and unlocked private-placement shares set post-IPO supply <span class="cite">(pp. 318–319)</span>.</li>
+<li data-block><strong>What incidents lie behind “have in the past”?</strong> The scope of prior harmful or autonomous model behavior, and whether insurance and contracts cover the resulting liability <span class="cite">(pp. 30–31)</span>.</li>
+</ol>
+
+  <p class="foot">Confidential analysis · Not investment advice. Figures come from the Anthropic, PBC preliminary prospectus (S-1/A No. 2) and the companion SpaceX assessment. Prepared by an AI model made by the subject company.</p>
+</main>
+
+<script>
+(function(){
+  var synth = window.speechSynthesis;
+  var $ = function(id){return document.getElementById(id);};
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-block]'));
+  var playBtn=$('play'), statusEl=$('status'), countEl=$('count'), prog=$('prog'), voiceSel=$('voice'), rateSel=$('rate'), notice=$('notice'), citesBox=$('cites');
+  var voices=[], chosen=null, state='idle', cur=0, ci=0, gen=0, keep=null;
+
+  if(!synth || typeof SpeechSynthesisUtterance==='undefined'){
+    notice.hidden=false; notice.textContent='This browser cannot read aloud. Open the page in Chrome, Edge, Safari or Firefox to use the listening bar.';
+    ['play','prev','next','stop'].forEach(function(i){$(i).disabled=true;});
+    return;
+  }
+  function store(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+
+  /* ---------- voice choice: UK English, female ---------- */
+  var FEMALE=/(female|hazel|susan|libby|sonia|maisie|serena|kate|stephanie|martha|emma|amy|fiona|lucy|abbi|bella|elena|holly|mia|olivia|ada|alice|ava)/i;
+  var MALE=/(\bmale\b|george|ryan|thomas|daniel|oliver|arthur|alfie|noah|rishi|james|harry|ollie)/i;
+  var PREFER=[/sonia.*(natural|online)/i,/libby.*(natural|online)/i,/maisie.*(natural|online)/i,/google uk english female/i,/serena/i,/stephanie/i,/kate/i,/hazel/i,/susan/i,/martha/i];
+  function isGB(v){return /^en[-_]gb$/i.test(v.lang||'');}
+  function score(v){
+    var s=0, n=v.name||'';
+    if(isGB(v)) s+=100; else if(/^en/i.test(v.lang||'')) s+=10;
+    if(MALE.test(n) && !/female/i.test(n)) s-=80;
+    if(FEMALE.test(n)) s+=40;
+    for(var i=0;i<PREFER.length;i++){ if(PREFER[i].test(n)){ s+=30-i; break; } }
+    if(/natural|online|premium|enhanced/i.test(n)) s+=8;
+    return s;
+  }
+  function fillVoices(){
+    voices = synth.getVoices().filter(function(v){return /^en/i.test(v.lang||'');});
+    if(!voices.length) return;
+    voices.sort(function(a,b){return score(b)-score(a);});
+    var saved=load('ant-voice'); var pick=null;
+    if(saved){ for(var i=0;i<voices.length;i++){ if(voices[i].name===saved){pick=voices[i];break;} } }
+    if(!pick) pick=voices[0];
+    voiceSel.innerHTML='';
+    voices.forEach(function(v){
+      var o=document.createElement('option'); o.value=v.name;
+      o.textContent=v.name+' ('+v.lang+')'; if(v===pick) o.selected=true; voiceSel.appendChild(o);
+    });
+    chosen=pick; checkNotice();
+  }
+  function checkNotice(){
+    if(!chosen){return;}
+    if(!isGB(chosen)){
+      notice.hidden=false;
+      notice.textContent='No UK English voice was found on this device, so the page is using '+chosen.name+'. Install an English (United Kingdom) voice in your system settings, then reload to hear a UK voice.';
+    } else if(MALE.test(chosen.name) && !/female/i.test(chosen.name)){
+      notice.hidden=false; notice.textContent='The selected UK voice may be male. Choose a different voice from the list for a female UK voice.';
+    } else { notice.hidden=true; }
+  }
+  fillVoices();
+  if('onvoiceschanged' in synth) synth.onvoiceschanged=fillVoices;
+  setTimeout(fillVoices,400); setTimeout(fillVoices,1500);
+  voiceSel.addEventListener('change',function(){
+    for(var i=0;i<voices.length;i++){ if(voices[i].name===voiceSel.value){chosen=voices[i];} }
+    store('ant-voice',voiceSel.value); checkNotice(); if(state==='playing') restartChunk();
+  });
+  var r=load('ant-rate'); if(r){ rateSel.value=r; }
+  rateSel.addEventListener('change',function(){ store('ant-rate',rateSel.value); if(state==='playing') restartChunk(); });
+  citesBox.addEventListener('change',function(){ if(state==='playing') restartChunk(); });
+
+  /* ---------- text preparation ---------- */
+  function speakText(el){
+    var t;
+    if(el.hasAttribute('data-speak')){ t=el.getAttribute('data-speak'); }
+    else {
+      var c=el.cloneNode(true);
+      var kill=c.querySelectorAll('button'+(citesBox.checked?'':',.cite'));
+      for(var i=0;i<kill.length;i++){ kill[i].parentNode.removeChild(kill[i]); }
+      t=c.textContent;
+    }
+    return clean(t);
+  }
+  function clean(t){
+    t=t.replace(/\[STATED in doc[^\]]*\]/g,'Stated, in the document and the companion report.')
+       .replace(/\[STATED \+ INFERENCE\]/g,'Stated, and inference.')
+       .replace(/\[STATED\]/g,'Stated.').replace(/\[INFERENCE\]/g,'Inference.');
+    t=t.replace(/9M[’']26/g,'the first nine months of 2026').replace(/9M[’']25/g,'the first nine months of 2025')
+       .replace(/FY(20)?26/g,'fiscal 2026').replace(/FY2025/g,'fiscal 2025').replace(/Q1[’']27/g,'Q1 2027');
+    t=t.replace(/(\d)\s?[–-]\s?(\$?\d)/g,'$1 to $2');
+    t=t.replace(/([BMT])\s?[–-]\s?(\$)/g,'$1 to $2');
+    t=t.replace(/\$\(([\d.,]+)\)\s?(trillion|billion|million|T|B|M)\b/g,function(m,n,u){return 'negative '+n+' '+unit(u)+' dollars';});
+    t=t.replace(/\$\(([\d.,]+)\)/g,'negative $1 dollars');
+    t=t.replace(/\$([\d.,]+)\s?(trillion|billion|million|T|B|M|K)\b/g,function(m,n,u){return n+' '+unit(u)+' dollars';});
+    t=t.replace(/\/share/g,' per share');
+    t=t.replace(/\$\s?millions?\b/g,'millions of dollars');
+    t=t.replace(/\$(\d+(?:,\d{3})*(?:\.\d+)?)/g,'$1 dollars');
+    t=t.replace(/(\d)\s?B\b/g,'$1 billion').replace(/(\d)\s?M\b/g,'$1 million');
+    t=t.replace(/\((\d+)\)\s?%/g,'negative $1 percent').replace(/%/g,' percent');
+    t=t.replace(/\+\s?(\d)/g,'plus $1').replace(/(\d)\+/g,'$1 plus');
+    t=t.replace(/~/g,'about ').replace(/≈/g,' approximately ').replace(/×/g,' times').replace(/→/g,' to ').replace(/&lt;|</g,'under ');
+    t=t.replace(/\bTTM\b/g,'trailing twelve months').replace(/\bNRR\b/g,'net revenue retention').replace(/\bSBC\b/g,'stock-based compensation')
+       .replace(/\bRSUs?\b/g,function(m){return m==='RSU'?'R S U':'R S Us';}).replace(/\bLTBT\b/g,'L T B T').replace(/\bTAM\b/g,'T A M')
+       .replace(/\bGAAP\b/g,'gap').replace(/\bIPO\b/g,'I P O').replace(/\bPBC\b/g,'P B C').replace(/\bLLC\b/g,'L L C')
+       .replace(/\bIDC\b/g,'I D C').replace(/\bAMD\b/g,'A M D').replace(/\bAWS\b/g,'A W S').replace(/\bP\/E\b/g,'P E ratio')
+       .replace(/\bPP&E\b/g,'property and equipment').replace(/\bS-1\/A\b/g,'S-1 A').replace(/\bNo\. 2\b/g,'number 2')
+       .replace(/\bUS\b/g,'U S').replace(/\bvs\.?\s/g,'versus ').replace(/\bff\./g,'and following');
+    t=t.replace(/(dollars|billion|million|trillion)\s?[–-]\s?(\d)/g,'$1 to $2');
+    t=t.replace(/\s—\s|—/g,', ').replace(/\s–\s/g,', ');
+    t=t.replace(/(dollars|percent)\+/g,'$1 or more').replace(/approximately\s+about/g,'approximately').replace(/\ba about /g,'a roughly ').replace(/\ban about /g,'a roughly ').replace(/trailing-twelve-month \(trailing twelve months\)/g,'trailing twelve month');
+    t=t.replace(/(^|[.!?]\s)([a-z])/g,function(m,p,l){return p+l.toUpperCase();});
+    t=t.replace(/\.,/g,'.').replace(/\s+/g,' ').replace(/\s+([,.;:!?])/g,'$1').trim();
+    return t;
+  }
+  function unit(u){ return ({T:'trillion',B:'billion',M:'million',K:'thousand'})[u]||u; }
+  function chunks(t){
+    var s=t.replace(/([.!?])\s+/g,'$1\u0001').split('\u0001'), out=[], buf='';
+    for(var i=0;i<s.length;i++){
+      if((buf+' '+s[i]).length>230 && buf){ out.push(buf); buf=s[i]; } else { buf=buf?buf+' '+s[i]:s[i]; }
+    }
+    if(buf) out.push(buf);
+    return out.length?out:[t];
+  }
+
+  /* ---------- playback ---------- */
+  var queue=[];
+  function mark(i){
+    for(var k=0;k<blocks.length;k++){ blocks[k].classList.remove('speaking'); }
+    var b=blocks[i]; if(!b) return;
+    b.classList.add('speaking');
+    var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var rect=b.getBoundingClientRect(), top=document.querySelector('.player').offsetHeight+20;
+    if(rect.top<top||rect.bottom>window.innerHeight-40){ b.scrollIntoView({block:'center',behavior:rm?'auto':'smooth'}); }
+    countEl.textContent='Part '+(i+1)+' of '+blocks.length;
+    prog.style.width=((i+1)/blocks.length*100)+'%';
+  }
+  function setState(s){
+    state=s;
+    playBtn.innerHTML = s==='playing' ? '&#10074;&#10074; Pause' : (s==='paused' ? '&#9654; Resume' : '&#9654; Listen');
+    statusEl.textContent = s==='playing' ? 'Reading aloud.' : (s==='paused' ? 'Paused.' : 'Ready. Press Listen, or tap any paragraph to start from there.');
+  }
+  function startBlock(i,g,startChunk){
+    if(g!==gen) return;
+    if(i>=blocks.length){ finish(); return; }
+    cur=i; mark(i);
+    queue=chunks(speakText(blocks[i]));
+    speakChunk(startChunk||0,g);
+  }
+  function speakChunk(k,g){
+    if(g!==gen) return;
+    if(k>=queue.length){ startBlock(cur+1,g,0); return; }
+    ci=k;
+    var u=new SpeechSynthesisUtterance(queue[k]);
+    keep=u;
+    if(chosen) u.voice=chosen;
+    u.lang=(chosen&&chosen.lang)||'en-GB';
+    u.rate=parseFloat(rateSel.value)||1; u.pitch=1;
+    u.onend=function(){ if(g===gen) speakChunk(k+1,g); };
+    u.onerror=function(e){ if(g!==gen) return; if(e&&(e.error==='canceled'||e.error==='interrupted')) return; statusEl.textContent='The voice stopped ('+(e&&e.error||'error')+'). Try another voice.'; };
+    synth.speak(u);
+  }
+  function halt(){ gen++; try{synth.cancel();}catch(e){} }
+  function playFrom(i,k){ halt(); setState('playing'); var g=gen; setTimeout(function(){ startBlock(i,g,k||0); },60); }
+  function restartChunk(){ var b=cur,k=ci; halt(); var g=gen; setTimeout(function(){ if(state==='playing'){ startBlock(b,g,k); } },60); }
+  function finish(){ halt(); setState('idle'); for(var k=0;k<blocks.length;k++){blocks[k].classList.remove('speaking');} statusEl.textContent='Finished reading.'; }
+
+  playBtn.addEventListener('click',function(){
+    if(state==='playing'){ halt(); setState('paused'); }
+    else if(state==='paused'){ playFrom(cur,ci); }
+    else { playFrom(0,0); }
+  });
+  $('stop').addEventListener('click',function(){ halt(); setState('idle'); for(var k=0;k<blocks.length;k++){blocks[k].classList.remove('speaking');} cur=0; ci=0; prog.style.width='0'; countEl.textContent=''; });
+  $('next').addEventListener('click',function(){ var n=Math.min(cur+1,blocks.length-1); if(state==='idle'){cur=n;} playFrom(n,0); });
+  $('prev').addEventListener('click',function(){ var n=Math.max(cur-1,0); playFrom(n,0); });
+  document.addEventListener('click',function(e){
+    var f=e.target.closest&&e.target.closest('[data-from]');
+    if(f){ var h=f.parentNode.querySelector('[data-block]'); playFrom(blocks.indexOf(h),0); return; }
+    if(e.target.closest&&e.target.closest('.player')) return;
+    var sel=window.getSelection&&String(window.getSelection());
+    if(sel) return;
+    var b=e.target.closest&&e.target.closest('[data-block]');
+    if(b && state!=='idle'){ playFrom(blocks.indexOf(b),0); }
+  });
+  window.addEventListener('beforeunload',function(){ try{synth.cancel();}catch(e){} });
+})();
+</script>
+</body>
+</html>
